@@ -446,21 +446,13 @@ require("lazy").setup({
 			opts = {
 				-- define project roots
 				projects = {
-					"~/code/LMU/Registrar/articulation-helper/client",
-					"~/code/LMU/Registrar/articulation-helper/server",
 					"~/.config/nvim",
-					"~/code/dunno",
-					"~/Documents/LMU/CPD/the_CPD_annual_report_project",
 					"~/.wezterm.lua",
-					"~/code/nn",
-					"~/code/nn_zig",
-					"~/code/codecrafters-http-server-zig",
-					"~/code/zig/http-server",
 					"~/code/codecrafters-redis-zig",
-					"~/code/mat",
 					"~/code/rreddis",
 					"~/note",
 					"~/code/zig/mat",
+					"~/code/zig/aoc2024",
 				},
 			},
 			init = function()
