@@ -525,31 +525,6 @@ require("lazy").setup({
 		},
 
 		--colorschemes
-		{
-			"svrana/neosolarized.nvim",
-			dependencies = { "tjdevries/colorbuddy.vim" },
-			config = function()
-				-- vim.cmd.colorscheme("neosolarized")
-			end,
-		},
-		{
-			"folke/tokyonight.nvim",
-			lazy = false,
-			config = function()
-				require("tokyonight").setup({
-					transparent = true,
-					styles = {
-						sidebars = "transparent",
-						floats = "transparent",
-					},
-				})
-				-- vim.cmd.colorscheme("tokyonight")
-			end,
-		},
-		{ "rebelot/kanagawa.nvim" },
-		{ "morhetz/gruvbox" },
-		{ "rose-pine/neovim" },
-		-- { "blazkowolf/gruber-darker.nvim" },
 		{ "marko-cerovac/material.nvim" },
 
 		-- terminal
