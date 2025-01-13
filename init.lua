@@ -5,6 +5,7 @@ require("keymaps")
 require("utils")
 require("autocmd")
 require("neovide")
+require("themes")
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -82,7 +83,7 @@ require("lazy").setup({
 				vim.diagnostic.config({
 					virtual_text = false,
 					signs = true,
-					underline = true,
+					underline = false,
 					update_in_insert = false,
 					severity_sort = true,
 				})
@@ -177,13 +178,18 @@ require("lazy").setup({
 					mapping = {
 						-- Navigate through suggestions
 						["<Tab>"] = cmp.mapping(function(fallback)
-							if cmp.visible() then
+							local copilot = require("copilot.suggestion")
+
+							if copilot.is_visible() then
+								copilot.accept()
+							elseif cmp.visible() then
 								cmp.select_next_item()
+							-- elseif luasnip.expand_or_locally_jumpable() then
+							-- 	luasnip.expand_or_jump()
 							else
 								fallback()
 							end
 						end, { "i", "s" }),
-
 						["<S-Tab>"] = cmp.mapping(function(fallback)
 							if cmp.visible() then
 								cmp.select_prev_item()
@@ -203,7 +209,7 @@ require("lazy").setup({
 					},
 
 					sources = {
-						{ name = "copilot", group_index = 2, priority = 1000 },
+						-- { name = "copilot", group_index = 2, priority = 1000 },
 						{ name = "luasnip", group_index = 2, priority = 500 },
 						{ name = "nvim_lsp", group_index = 2, priority = 500 },
 						{ name = "path", group_index = 1000 },
@@ -240,21 +246,58 @@ require("lazy").setup({
 
 		{
 			"zbirenbaum/copilot.lua",
-			config = function()
-				require("copilot").setup({
-					suggestion = { enabled = false },
-					panel = { enabled = false },
+			cmd = "Copilot",
+			event = "InsertEnter",
+			opts = {
+				-- I don't find the panel useful.
+				panel = { enabled = false },
+				suggestion = {
+					auto_trigger = true,
+					-- Use alt to interact with Copilot.
+					keymap = {
+						-- Disable the built-in mapping, we'll configure it in nvim-cmp.
+						accept = false,
+						accept_word = "<M-w>",
+						accept_line = "<M-l>",
+						next = "<M-]>",
+						prev = "<M-[>",
+						dismiss = "/",
+					},
+				},
+				filetypes = { markdown = true },
+			},
+			config = function(_, opts)
+				local cmp = require("cmp")
+				local copilot = require("copilot.suggestion")
+				local luasnip = require("luasnip")
+
+				require("copilot").setup(opts)
+
+				local function set_trigger(trigger)
+					vim.b.copilot_suggestion_auto_trigger = trigger
+					vim.b.copilot_suggestion_hidden = not trigger
+				end
+
+				-- Hide suggestions when the completion menu is open.
+				cmp.event:on("menu_opened", function()
+					if copilot.is_visible() then
+						copilot.dismiss()
+					end
+					set_trigger(false)
+				end)
+
+				-- Disable suggestions when inside a snippet.
+				cmp.event:on("menu_closed", function()
+					set_trigger(not luasnip.expand_or_locally_jumpable())
+				end)
+				vim.api.nvim_create_autocmd("User", {
+					pattern = { "LuasnipInsertNodeEnter", "LuasnipInsertNodeLeave" },
+					callback = function()
+						set_trigger(not luasnip.expand_or_locally_jumpable())
+					end,
 				})
 			end,
 		},
-
-		{
-			"zbirenbaum/copilot-cmp",
-			config = function()
-				require("copilot_cmp").setup()
-			end,
-		},
-
 		{
 			"mhartington/formatter.nvim",
 			config = function()
@@ -309,6 +352,17 @@ require("lazy").setup({
 								return {
 									exe = "zig fmt",
 									args = {
+										util.escape_path(util.get_current_buffer_file_path()),
+									},
+								}
+							end,
+						},
+						cpp = {
+							function()
+								return {
+									exe = "clang-format",
+									args = {
+										"-i",
 										util.escape_path(util.get_current_buffer_file_path()),
 									},
 								}
@@ -411,19 +465,19 @@ require("lazy").setup({
 			end,
 		},
 
-		-- {
-		-- 	"nvim-treesitter/nvim-treesitter",
-		-- 	lazy = false,
-		-- 	run = ":TSUpdate",
-		-- 	config = function()
-		-- 		require("nvim-treesitter.configs").setup({
-		-- 			highlight = {
-		-- 				enable = false,
-		-- 				additional_vim_regex_highlighting = false,
-		-- 			},
-		-- 		})
-		-- 	end,
-		-- },
+		{
+			"nvim-treesitter/nvim-treesitter",
+			lazy = false,
+			run = ":TSUpdate",
+			config = function()
+				require("nvim-treesitter.configs").setup({
+					highlight = {
+						enable = true,
+						additional_vim_regex_highlighting = true,
+					},
+				})
+			end,
+		},
 
 		{
 			-- highlight symbols
@@ -453,6 +507,8 @@ require("lazy").setup({
 					"~/note",
 					"~/code/zig/mat",
 					"~/code/zig/aoc2024",
+					"~/code/cachewise-nn",
+					"~/code/daily-challenges/",
 				},
 			},
 			init = function()
@@ -496,26 +552,19 @@ require("lazy").setup({
 				})
 			end,
 		},
-
 		{
-			"nvim-tree/nvim-tree.lua",
-			lazy = false,
-			config = function()
-				require("nvim-tree").setup({
-					filters = {
-						dotfiles = false,
-					},
-					git = {
-						enable = true,
-						ignore = false,
-						timeout = 500,
-					},
-				})
-				vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
-			end,
+			"stevearc/oil.nvim",
+			opts = {
+				skip_confirm_for_simple_edits = true,
+				view_options = { show_hidden = true },
+				columns = {
+					"icon",
+					"permissions",
+					"size",
+					"mtime",
+				},
+			},
 		},
-
-		{ "stevearc/oil.nvim", opts = {} },
 
 		{
 			"lewis6991/gitsigns.nvim",
@@ -526,18 +575,15 @@ require("lazy").setup({
 
 		--colorschemes
 		{ "marko-cerovac/material.nvim" },
+		{ "folke/tokyonight.nvim" },
 
-		-- terminal
-		{
-			"akinsho/toggleterm.nvim",
-			config = function()
-				require("toggleterm").setup()
-				vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm direction=horizontal<CR>", { silent = true })
-				vim.keymap.set("n", "<leader>tf", ":ToggleTerm direction=float<CR>", { silent = true })
-				vim.keymap.set("n", "<leader>v", ":ToggleTerm direction=vertical<CR>", { silent = true })
-				vim.keymap.set("n", "<leader>tt", ":ToggleTerm direction=tab<CR>", { silent = true })
-			end,
-		},
+		-- { "bdesham/biogoo" },
+		-- { "yasukotelin/notelight" },
+		-- { "mgutz/vim-colors" },
+		-- { "lunacookies/vim-corvine" },
+		-- { "weih/vim-mac-classic-alt" },
+		-- { "conweller/endarkened.vim" },
+		-- { "j201/stainless" },
 
 		{
 			"xiyaowong/transparent.nvim",
@@ -566,8 +612,6 @@ require("lazy").setup({
 
 		{ "m4xshen/autoclose.nvim", opts = {} },
 
-		{ "folke/trouble.nvim", opts = {} },
-
 		{
 			"hadronized/hop.nvim",
 			config = function()
@@ -578,6 +622,9 @@ require("lazy").setup({
 
 		-- plugins end here
 		{ "norcalli/nvim-colorizer.lua" },
+
+		-- smooth scrolling
+		{ "karb94/neoscroll.nvim", opts = {} },
 	},
 
 	-- Configure any other settings here. See the documentation for more details.
@@ -585,4 +632,6 @@ require("lazy").setup({
 	checker = { enabled = true },
 })
 
-vim.cmd.colorscheme("neosolarized")
+vim.cmd.colorscheme("tokyonight-night")
+
+vim.keymap.set("n", "<leader>e", ":Oil<CR>", { silent = true })
