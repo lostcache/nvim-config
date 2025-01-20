@@ -536,30 +536,24 @@ require("lazy").setup({
 		},
 
 		{
-			"Robitx/gp.nvim",
+			"robitx/gp.nvim",
 			config = function()
 				require("gp").setup({
-					providers = {
-						-- secrets can be strings or tables with command and arguments
-						-- secret = { "cat", "path_to/openai_api_key" },
-						-- secret = { "bw", "get", "password", "OPENAI_API_KEY" },
-						-- secret : "sk-...",
-						-- secret = os.getenv("env_name.."),
-						openai = {
-							disable = true,
-							endpoint = "https://api.openai.com/v1/chat/completions",
-							-- secret = os.getenv("OPENAI_API_KEY"),
-						},
-						copilot = {
-							disable = false,
-							endpoint = "https://api.githubcopilot.com/chat/completions",
-							secret = {
-								"bash",
-								"-c",
-								"cat ~/.config/github-copilot/hosts.json | sed -e 's/.*oauth_token...//;s/\".*//'",
-							},
-						},
-					},
+					-- Optional configuration
+					openai_api_key = os.getenv("OPENAI_API_KEY"),
+
+					-- GitHub Copilot configuration
+					github_token = function()
+						local token_command = {
+							"bash",
+							"-c",
+							'cat ~/.config/github-copilot/hosts.json | grep -o \'"oauth_token": *"[^"]*"\' | sed \'s/.*": *"//\' | tr -d \'"\'',
+						}
+						local handle = io.popen(table.concat(token_command, " "))
+						local result = handle:read("*a")
+						handle:close()
+						return result:gsub("%s+", "")
+					end,
 				})
 			end,
 		},
