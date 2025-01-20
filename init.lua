@@ -121,6 +121,17 @@ require("lazy").setup({
 							},
 						},
 					},
+					texlab = {
+						-- settings = {
+						-- 	texlab = {
+						-- 		build = {
+						-- 			executable = "latexmk",
+						-- 			args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+						-- 			onSave = true,
+						-- 		},
+						-- 	},
+						-- },
+					},
 				}
 
 				-- nvim-cmp supports additional completion capabilities, so broadcast that to servers
@@ -320,15 +331,15 @@ require("lazy").setup({
 								}
 							end,
 						},
-						javascript = {
-							function()
-								return {
-									exe = "prettier",
-									args = { "--stdin-filepath", vim.api.nvim_buf_get_name(0) },
-									stdin = true,
-								}
-							end,
-						},
+						-- javascript = {
+						-- 	function()
+						-- 		return {
+						-- 			exe = "prettier",
+						-- 			args = { "--stdin-filepath", vim.api.nvim_buf_get_name(0) },
+						-- 			stdin = true,
+						-- 		}
+						-- 	end,
+						-- },
 						python = {
 							function()
 								return {
@@ -501,14 +512,14 @@ require("lazy").setup({
 				-- define project roots
 				projects = {
 					"~/.config/nvim",
-					"~/.wezterm.lua",
 					"~/code/codecrafters-redis-zig",
 					"~/code/rreddis",
 					"~/note",
 					"~/code/zig/mat",
 					"~/code/zig/aoc2024",
-					"~/code/cachewise-nn",
 					"~/code/daily-challenges/",
+					"~/code/ocaml/project_name",
+					"~/.config/ghostty/",
 				},
 			},
 			init = function()
@@ -625,6 +636,15 @@ require("lazy").setup({
 
 		-- smooth scrolling
 		{ "karb94/neoscroll.nvim", opts = {} },
+
+		-- VimTeX for LaTeX editing
+		{
+			"lervag/vimtex",
+			config = function()
+				vim.g.vimtex_view_method = "zathura" -- Set Zathura as the PDF viewer
+				vim.g.maplocalleader = "," -- Set local leader key to ","
+			end,
+		},
 	},
 
 	-- Configure any other settings here. See the documentation for more details.
@@ -635,3 +655,7 @@ require("lazy").setup({
 vim.cmd.colorscheme("tokyonight-night")
 
 vim.keymap.set("n", "<leader>e", ":Oil<CR>", { silent = true })
+
+vim.g.vimtex_view_method = "zathura"
+vim.g.vimtex_view_general_options = [[--synctex-forward @line:@col:@tex @pdf]]
+vim.g.vimtex_compiler_method = "latexmk"
