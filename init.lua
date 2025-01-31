@@ -22,6 +22,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		os.exit(1)
 	end
 end
+
 vim.opt.rtp:prepend(lazypath)
 
 -- Make sure to setup `mapleader` and `maplocalleader` before
@@ -520,6 +521,7 @@ require("lazy").setup({
 					"~/code/daily-challenges/",
 					"~/code/ocaml/project_name",
 					"~/.config/ghostty/",
+					"~/code/neetcode",
 				},
 			},
 			init = function()
@@ -646,7 +648,7 @@ require("lazy").setup({
 	checker = { enabled = true },
 })
 
-vim.cmd.colorscheme("tokyonight-night")
+vim.cmd.colorscheme("modus_operandi")
 
 vim.keymap.set("n", "<leader>e", ":Oil<CR>", { silent = true })
 
