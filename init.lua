@@ -607,13 +607,13 @@ require("lazy").setup({
 			end,
 		},
 
-		{
-			"HiPhish/rainbow-delimiters.nvim",
-			lazy = false,
-			config = function()
-				require("rainbow-delimiters.setup").setup({})
-			end,
-		},
+		-- {
+		-- 	"HiPhish/rainbow-delimiters.nvim",
+		-- 	lazy = false,
+		-- 	config = function()
+		-- 		require("rainbow-delimiters.setup").setup({})
+		-- 	end,
+		-- },
 
 		{ "MeanderingProgrammer/render-markdown.nvim", opts = {} },
 
