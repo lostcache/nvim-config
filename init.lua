@@ -584,13 +584,10 @@ require("lazy").setup({
 		{ "marko-cerovac/material.nvim" },
 		{ "folke/tokyonight.nvim" },
 
-		-- { "bdesham/biogoo" },
-		-- { "yasukotelin/notelight" },
-		-- { "mgutz/vim-colors" },
-		-- { "lunacookies/vim-corvine" },
-		-- { "weih/vim-mac-classic-alt" },
-		-- { "conweller/endarkened.vim" },
-		-- { "j201/stainless" },
+		{ "rebelot/kanagawa.nvim" },
+		{ "morhetz/gruvbox" },
+		{ "miikanissi/modus-themes.nvim" },
+		{ "craftzdog/solarized-osaka.nvim" },
 
 		{
 			"xiyaowong/transparent.nvim",
@@ -641,6 +638,13 @@ require("lazy").setup({
 				vim.g.maplocalleader = "," -- Set local leader key to ","
 			end,
 		},
+		{
+			"nvimdev/nerdicons.nvim",
+			cmd = "NerdIcons",
+			config = function()
+				require("nerdicons").setup({})
+			end,
+		},
 	},
 
 	-- Configure any other settings here. See the documentation for more details.
@@ -648,7 +652,7 @@ require("lazy").setup({
 	checker = { enabled = true },
 })
 
-vim.cmd.colorscheme("modus_operandi")
+vim.cmd.colorscheme("material-oceanic")
 
 vim.keymap.set("n", "<leader>e", ":Oil<CR>", { silent = true })
 
