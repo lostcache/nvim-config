@@ -638,13 +638,6 @@ require("lazy").setup({
 				vim.g.maplocalleader = "," -- Set local leader key to ","
 			end,
 		},
-		{
-			"nvimdev/nerdicons.nvim",
-			cmd = "NerdIcons",
-			config = function()
-				require("nerdicons").setup({})
-			end,
-		},
 	},
 
 	-- Configure any other settings here. See the documentation for more details.
