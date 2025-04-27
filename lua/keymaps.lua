@@ -1,11 +1,8 @@
-local vim = vim
-
--- leader key
+-- Set leader key
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- [[ Basic Keymaps ]]
-
+-- Default options for keymaps
 local opts = { noremap = true, silent = true }
 
 -- Shorten function name
@@ -19,36 +16,46 @@ keymap({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
---Remap space as leader key
+-- Remap space as leader key (redundant with line 5, but keeping for compatibility)
 keymap("", "<Space>", "<Nop>", opts)
 
--- navigate splits
+-- Window navigation
 keymap("n", "<leader>h", "<C-w>h", opts)
 keymap("n", "<leader>j", "<C-w>j", opts)
 keymap("n", "<leader>k", "<C-w>k", opts)
 keymap("n", "<leader>l", "<C-w>l", opts)
 
--- Resize with arrows
+-- Window resizing
 keymap("n", "<C-Up>", ":resize -2<CR>", opts)
 keymap("n", "<C-Down>", ":resize +2<CR>", opts)
 keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
 keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
--- Navigate buffers
+-- Buffer navigation
 keymap("n", "<S-l>", ":bnext<CR>", opts)
 keymap("n", "<S-h>", ":bprevious<CR>", opts)
 
--- Press jk to exit insert mode
+-- Quick escape from insert mode
 keymap("i", "jk", "<ESC>", opts)
 
--- clear highlights
+-- Clear search highlights
 keymap("n", "<leader>n", ":nohl<CR>", opts)
 
--- Diagnostics
-keymap("n", "<leader>d", ":Trouble diagnostics toggle focus=true filter.buf=0<cr><cr>", opts)
+-- Toggle diagnostics
+keymap("n", "<leader>d", ":Trouble diagnostics toggle focus=true filter.buf=0<cr>", opts)
 
--- go normal mode in terminal
+-- Exit terminal mode
 keymap("t", "jk", [[<C-\><C-n>]], opts)
 
--- project picker
-keymap("n", "<leader>p", "lua require('telescope').extensions.project.project{}<CR>", opts)
+-- Open project picker
+keymap("n", "<leader>pp", ":lua require('telescope').extensions.project.project{}<CR>", opts)
+
+-- Save file
+keymap("n", "<leader>w", ":w<CR>", opts)
+
+-- Close buffer
+keymap("n", "<leader>c", ":bd<CR>", opts)
+
+-- Move selected lines up and down in visual mode
+keymap("v", "J", ":m '>+1<CR>gv=gv", opts)
+keymap("v", "K", ":m '<-2<CR>gv=gv", opts)
